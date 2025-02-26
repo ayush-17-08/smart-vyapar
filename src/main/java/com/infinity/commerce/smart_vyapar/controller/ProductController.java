@@ -14,9 +14,10 @@
     @RestController()
     @RequestMapping("/product")
     public class ProductController {
-
+        
         @Autowired
         ProductService productService;
+
 
         @GetMapping("/health-check")
         public Boolean getHealthStatus(){
@@ -58,7 +59,7 @@
 
         @PostMapping("/add")
         public ResponseEntity<Product> add(@RequestBody Product product){
-    //        System.out.println("Message: "+ product);
+
             Boolean serviceResponse=productService.add(product); // by reference
             if(serviceResponse){
                 return ResponseEntity.status(HttpStatus.CREATED).body(product);

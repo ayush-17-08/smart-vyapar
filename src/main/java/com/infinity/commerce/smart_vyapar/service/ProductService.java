@@ -1,6 +1,10 @@
 package com.infinity.commerce.smart_vyapar.service;
 
 import com.infinity.commerce.smart_vyapar.entity.Product;
+import com.infinity.commerce.smart_vyapar.enums.TransactionStatus;
+import com.infinity.commerce.smart_vyapar.enums.TransactionType;
+import com.infinity.commerce.smart_vyapar.kafka.TransactionEvent;
+import com.infinity.commerce.smart_vyapar.kafka.TransactionProducer;
 import com.infinity.commerce.smart_vyapar.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +21,15 @@ public class ProductService {
     @Autowired
     ProductRepository productRepository ;
 
+    @Autowired
+    TransactionProducer transactionProducer;
+
+    private final String topic="product-event";
+
     public Boolean add(Product product){
         productRepository.save(product);
+        TransactionEvent transactionEvent=new TransactionEvent(product.getId(), TransactionType.BUY, TransactionStatus.SUCCESS,product.getQuantity());
+        transactionProducer.sendEvent(topic,transactionEvent);
         return true;
     }
     //change code according to archive
